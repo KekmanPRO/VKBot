@@ -432,6 +432,22 @@ def randomEmojiString():
         result += emoji.random_emoji()[0]
     return result
 
+def getRandomPhoto(albumName):
+    albums = api.method('photos.getAlbums', {})
+    for album in albums['items']:
+        if album['title'] == albumName:
+            albumId = album['id']
+            params = {'album_id': albumId}
+            photos = api.method('photos.get', params)
+
+            photo = random.choice(photos['items'])
+
+            photoId = 'photo' + str(photo['owner_id']) + '_' + str(photo['id'])
+            return photoId
+        else:
+            print('Album \"' + albumName + '\" not found!')
+            return 'error'
+
 def respond(to, values):
     if 'chat_id' in to:
         values['chat_id'] = to['chat_id']
@@ -451,7 +467,8 @@ def sendMessage(chat_id):
 
     print ("sendMessage: " + chat_id)
 
-    sticker_id = None
+    photoId = None
+    stickerId = None
     responce = random.choice(words)
 
     if random.randint(0,1) == 1:
@@ -459,11 +476,15 @@ def sendMessage(chat_id):
     elif random.randint(0,1) == 1:
         responce = randomEmojiString()
     elif random.randint(0,1) == 1:
-        sticker_id = random.randint(1,168)
+        photoId = getRandomPhoto("BOT")
+    elif random.randint(0,1) == 1:
+        stickerId = random.randint(1,168)
 
     values = {'message': responce}
-    if sticker_id is not None:
-        values['sticker_id'] = sticker_id
+    if stickerId is not None:
+        values['sticker_id'] = stickerId
+    if photoId is not None:
+        values['attachment'] = photoId
 
     respond({'chat_id': chat_id}, values)
     timer = Timer(10, lambda: sendMessage(chat_id) )
