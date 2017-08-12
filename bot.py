@@ -451,14 +451,21 @@ def sendMessage(chat_id):
 
     print ("sendMessage: " + chat_id)
 
-
+    sticker_id = None
     responce = random.choice(words)
+
     if random.randint(0,1) == 1:
         responce = random.choice(phrases)
-    elif random.randint(0,3) == 1:
+    elif random.randint(0,1) == 1:
         responce = randomEmojiString()
+    elif random.randint(0,1) == 1:
+        sticker_id = random.randint(1,168)
 
-    respond({'chat_id': chat_id}, {'message': responce})
+    values = {'message': responce}
+    if sticker_id is not None:
+        values['sticker_id'] = sticker_id
+
+    respond({'chat_id': chat_id}, values)
     timer = Timer(10, lambda: sendMessage(chat_id) )
     timer.start()
 
